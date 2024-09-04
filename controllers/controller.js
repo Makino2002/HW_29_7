@@ -1,19 +1,21 @@
+const statusCode = require("./statusCode");
+const { v4: uuidv4 } = require("uuid");
 const users = [
   { id: 1, name: "Nguyễn Minh Mẫn" },
   { id: 2, name: "Mai Minh Mẫn" },
 ];
 
 function getAllUsers(request, response) {
-  response.statusCode = 200;
+  response.statusCode = statusCode.OK;
   response.setHeader("Content-Type", "application/json");
   response.end(JSON.stringify(users));
 }
 
 function createUser(request, response) {
   const newUser = request.body;
-  newUser.id = users.length + 1;
+  newUser.id = uuidv4();
   users.push(newUser);
-  response.statusCode = 201;
+  response.statusCode = statusCode.CREATED;
   response.setHeader("Content-Type", "application/json");
   response.end(JSON.stringify(newUser));
 }
@@ -22,11 +24,11 @@ function getUserById(request, response) {
   const userId = parseInt(request.params.id, 10);
   const user = users.find((u) => u.id === userId);
   if (user) {
-    response.statusCode = 200;
+    response.statusCode = statusCode.OK;
     response.setHeader("Content-Type", "application/json");
     response.end(JSON.stringify(user));
   } else {
-    response.statusCode = 404;
+    response.statusCode = statusCode.NOT_FOUND;
     response.setHeader("Content-Type", "application/json");
     response.end(JSON.stringify({ message: "User not found" }));
   }
@@ -37,11 +39,11 @@ function updateUser(request, response) {
   const userIndex = users.findIndex((u) => u.id === userId);
   if (userIndex !== -1) {
     users[userIndex] = { ...users[userIndex], ...request.body };
-    response.statusCode = 200;
+    response.statusCode = statusCode.OK;
     response.setHeader("Content-Type", "application/json");
     response.end(JSON.stringify(users[userIndex]));
   } else {
-    response.statusCode = 404;
+    response.statusCode = statusCode.NOT_FOUND;
     response.setHeader("Content-Type", "application/json");
     response.end(JSON.stringify({ message: "User not found" }));
   }
